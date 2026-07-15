@@ -55,7 +55,7 @@ export default function EditTaskScreen() {
   const [priority, setPriority] = useState<Priority>(Priority.MEDIUM);
   const [selectedCategory, setSelectedCategory] = useState('personal');
   const [repeat, setRepeat] = useState<RepeatInterval>(RepeatInterval.NONE);
-  const [selectedColor, setSelectedColor] = useState(COLORS.taskColors[0]);
+  const [selectedColor, setSelectedColor] = useState<string>(COLORS.taskColors[0]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [dueDate, setDueDate] = useState<Date | null>(null);

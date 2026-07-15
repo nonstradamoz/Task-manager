@@ -37,12 +37,13 @@ export default function TaskDetailScreen() {
   const priorityColor = getPriorityColor(task.priority);
 
   async function handleDelete() {
+    if (!task) return;
     Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete', style: 'destructive',
         onPress: async () => {
-          await deleteTask(userId, task.id);
+          await deleteTask(userId, task!.id);
           router.back();
         },
       },
@@ -50,15 +51,18 @@ export default function TaskDetailScreen() {
   }
 
   async function handleArchive() {
+    if (!task) return;
     await archiveTask(userId, task.id);
     router.back();
   }
 
   async function handleToggleFavorite() {
+    if (!task) return;
     await updateTask(userId, task.id, { isFavorite: !task.isFavorite });
   }
 
   async function handleComplete() {
+    if (!task) return;
     await completeTask(userId, task.id);
     router.back();
   }
@@ -121,7 +125,7 @@ export default function TaskDetailScreen() {
                 </View>
               )}
               {task.tags.map(tag => (
-                <View key={tag} style={{ backgroundColor: theme.colors.glassBorder ?? `${theme.colors.border}`, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }}>
+                <View key={tag} style={{ backgroundColor: theme.colors.border, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }}>
                   <Text style={{ color: theme.colors.textSecondary, fontSize: 12 }}>#{tag}</Text>
                 </View>
               ))}

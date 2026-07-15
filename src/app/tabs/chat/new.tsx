@@ -10,7 +10,7 @@ import { ChatService } from '../../../services/chat/ChatService';
 
 interface UserProfile {
   id: string;
-  name: string;
+  displayName: string;
   email: string;
   role: string;
 }
@@ -49,13 +49,13 @@ export default function NewChatScreen() {
       // Show loading overlay or just wait
       const chatId = await ChatService.createOrGetDirectChat(
         currentUser.uid,
-        currentUser.name || 'User',
+        currentUser.displayName || 'User',
         selectedUser.id,
-        selectedUser.name || 'User'
+        selectedUser.displayName || 'User'
       );
       
       // Navigate to chat room and close modal
-      router.replace(`/tabs/chat/${chatId}?name=${encodeURIComponent(selectedUser.name || 'User')}`);
+      router.replace(`/tabs/chat/${chatId}?name=${encodeURIComponent(selectedUser.displayName || 'User')}`);
     } catch (error) {
       console.error('Error creating direct chat:', error);
     }
@@ -85,7 +85,7 @@ export default function NewChatScreen() {
       </View>
       <View>
         <Text style={{ fontSize: 16, fontWeight: '600', color: theme.colors.text }}>
-          {item.name || 'Unknown User'}
+          {item.displayName || 'Unknown User'}
         </Text>
         <Text style={{ fontSize: 13, color: theme.colors.textSecondary }}>
           {item.email}

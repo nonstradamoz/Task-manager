@@ -41,7 +41,7 @@ export default function ChatRoomScreen() {
     setInputText('');
     
     try {
-      await ChatService.sendMessage(id, textToSend, user.uid, user.name || 'User');
+      await ChatService.sendMessage(id, textToSend, user.uid, user.displayName ?? 'Unknown');
     } catch (error) {
       console.error('Failed to send message:', error);
       // Could add a toast here

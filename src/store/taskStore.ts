@@ -9,7 +9,8 @@ import { useAuthStore } from './authStore';
 // Configure notifications
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
   }),
@@ -297,3 +298,35 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
   clearError: () => set({ error: null }),
 }));
+
+// ─── Task Reminders (Local Scheduling) ──────────────────────────────────────
+
+async function scheduleTaskReminders(tasks: Task[]) {
+  // Cancel all previously scheduled reminders to prevent duplicates
+  await Notifications.cancelAllScheduledNotificationsAsync();
+
+  const user = useAuthStore.getState().user;
+  const tasksNotificationsEnabled = user?.notificationPreferences?.tasks !== false;
+
+  if (!tasksNotificationsEnabled) return;
+
+  const now = new Date().getTime();
+
+  tasks.forEach(task => {
+    if (task.dueDate && task.status !== 'completed' && task.status !== 'archived') {
+      // Schedule 15 mins before due date
+      const reminderTime = task.dueDate.getTime() - 15 * 60 * 1000;
+      
+      if (reminderTime > now) {
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Upcoming Task Reminder ⏰',
+            body: `Your task "${task.title}" is due in 15 minutes!`,
+            data: { taskId: task.id, type: 'task_reminder' },
+          },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(reminderTime) } as any,
+        });
+      }
+    }
+  });
+}

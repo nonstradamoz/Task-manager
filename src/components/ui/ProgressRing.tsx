@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
-import Animated, { useAnimatedProps, withTiming, useSharedValue, useEffect } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, withTiming, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../contexts/ThemeContext';
 
