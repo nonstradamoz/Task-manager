@@ -1,25 +1,74 @@
 {
   "expo": {
-    "name": "biotasks",
+    "name": "BioTasks",
     "slug": "biotasks",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0f"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.biotasks.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to capture photos for task attachments",
+        "NSPhotoLibraryUsageDescription": "Used to select photos for task attachments",
+        "NSMicrophoneUsageDescription": "Used to record voice notes for tasks",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#0a0a0f"
       },
-      "predictiveBackGestureEnabled": false
+      "package": "com.biotasks.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "RECORD_AUDIO",
+        "NOTIFICATIONS",
+        "VIBRATE"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/android-icon-monochrome.png",
+          "color": "#3b82f6",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "BioTasks needs access to your photos for task attachments.",
+          "cameraPermission": "BioTasks needs camera access to capture task photos."
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "scheme": "biotasks",
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }

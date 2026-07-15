@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ─── Helper Functions ───────────────────────────────────────────────
+    
+    // Check if the user is signed in
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if the user is accessing their own data
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if the signed-in user is an Admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ─── Security Rules ──────────────────────────────────────────────────
+
+    // Chats Collection
+    match /chats/{chatId} {
+      
+      allow read: if isAuthenticated() && (
+        resource == null || 
+        resource.data.type == 'global' || 
+        request.auth.uid in resource.data.members
+      );
+      
+      allow create: if isAuthenticated() && (
+        request.resource.data.type == 'global' || 
+        request.auth.uid in request.resource.data.members
+      );
+      
+      allow update, delete: if isAuthenticated() && (
+        resource.data.type == 'global' || 
+        request.auth.uid in resource.data.members
+      );
+
+      match /messages/{messageId} {
+        allow read, write: if isAuthenticated() && (
+          get(/databases/$(database)/documents/chats/$(chatId)).data.type == 'global' || 
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.members
+        );
+      }
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      // Users can read all profiles (to find teammates). 
+      // Users can only write their own profile. Admins can read/write ANY profile.
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) || isAdmin();
+      
+      // Tasks Subcollection (users/{userId}/tasks/{taskId})
+      match /tasks/{taskId} {
+        // Users can manage their own tasks. Admins can assign/edit tasks for anyone.
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      
+      // Categories Subcollection (users/{userId}/categories/{categoryId})
+      match /categories/{categoryId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      
+      // Settings Subcollection (users/{userId}/settings/{settingId})
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+  }
+}
