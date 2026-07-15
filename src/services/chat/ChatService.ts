@@ -1,21 +1,20 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  query, 
-  where, 
-  orderBy, 
-  onSnapshot, 
-  addDoc, 
-  serverTimestamp, 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  serverTimestamp,
   getDocs,
   Timestamp
 } from 'firebase/firestore';
 import { firestore, COLLECTIONS } from '../../config/firebase';
 
 export type ChatType = 'global' | 'direct';
-
 export interface ChatRoom {
   id: string;
   type: ChatType;
@@ -37,10 +36,10 @@ export interface ChatMessage {
   createdAt: number | null;
 }
 
-// --- Constants ---
 const GLOBAL_CHAT_ID = 'global_team_chat';
+
 export class ChatService {
-  
+
   // ─── Initialize Global Chat ──────────────────────────────────────────────
   static async initializeGlobalChatIfMissing() {
     const docRef = doc(firestore, COLLECTIONS.CHATS, GLOBAL_CHAT_ID);
@@ -59,7 +58,7 @@ export class ChatService {
   static subscribeToUserChats(userId: string, onUpdate: (chats: ChatRoom[]) => void) {
     let globalChats: ChatRoom[] = [];
     let directChats: ChatRoom[] = [];
-    
+
     const notify = () => {
       const allChats = [...globalChats, ...directChats];
       // Sort by updatedAt descending (latest at top)
@@ -71,7 +70,7 @@ export class ChatService {
       collection(firestore, COLLECTIONS.CHATS),
       where('type', '==', 'global')
     );
-    
+
     const unsubscribeGlobal = onSnapshot(globalQuery, (snapshot) => {
       globalChats = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -130,7 +129,7 @@ export class ChatService {
 
   static async sendMessage(chatId: string, text: string, senderId: string, senderName: string) {
     const timestamp = serverTimestamp();
-    
+
     // 1. Add message
     await addDoc(collection(firestore, COLLECTIONS.messages(chatId)), {
       text,
@@ -153,7 +152,7 @@ export class ChatService {
   static async createOrGetDirectChat(user1Id: string, user1Name: string, user2Id: string, user2Name: string): Promise<string> {
     const chatId = [user1Id, user2Id].sort().join('_');
     const chatRef = doc(firestore, COLLECTIONS.CHATS, chatId);
-    
+
     const snap = await getDoc(chatRef);
     if (!snap.exists()) {
       await setDoc(chatRef, {
