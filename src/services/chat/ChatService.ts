@@ -37,8 +37,8 @@ export interface ChatMessage {
   createdAt: number | null;
 }
 
+// --- Constants ---
 const GLOBAL_CHAT_ID = 'global_team_chat';
-
 export class ChatService {
   
   // ─── Initialize Global Chat ──────────────────────────────────────────────
