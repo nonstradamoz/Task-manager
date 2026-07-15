@@ -16,12 +16,12 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 // TODO: Replace with your actual Firebase project credentials
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBt8Wfg1hiiSbjS9X_IFkoGEIS1cf9nfgI',
-  authDomain: 'biotasks-99db8.firebaseapp.com',
-  projectId: 'biotasks-99db8',
-  storageBucket: 'biotasks-99db8.firebasestorage.app',
-  messagingSenderId: '295973724201',
-  appId: '1:295973724201:web:7fc3015da592c1a8e2fc38',
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
 };
 
 // ─── Initialize Firebase (singleton) ─────────────────────────────────────────
