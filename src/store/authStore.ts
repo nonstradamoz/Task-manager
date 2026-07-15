@@ -14,6 +14,7 @@ interface AuthStore {
   logout: () => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
   updateUserRole: (uid: string, role: 'admin' | 'member') => Promise<void>;
+  updateNotificationPreferences: (uid: string, preferences: { chat?: boolean; tasks?: boolean }) => Promise<void>;
   setUser: (user: UserProfile | null) => void;
   setLoading: (loading: boolean) => void;
   clearError: () => void;
@@ -84,6 +85,19 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       }
     } catch (error: unknown) {
       set({ error: (error as Error).message, isLoading: false });
+      throw error;
+    }
+  },
+
+  updateNotificationPreferences: async (uid, preferences) => {
+    try {
+      await authService.updateNotificationPreferences(uid, preferences);
+      const currentUser = get().user;
+      if (currentUser?.uid === uid) {
+        set({ user: { ...currentUser, notificationPreferences: preferences } });
+      }
+    } catch (error: unknown) {
+      console.error('Failed to update notification preferences', error);
       throw error;
     }
   },

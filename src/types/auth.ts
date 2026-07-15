@@ -8,6 +8,10 @@ export interface UserProfile {
   expoPushToken?: string;
   emailVerified: boolean;
   role?: 'admin' | 'member';
+  notificationPreferences?: {
+    chat?: boolean;
+    tasks?: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

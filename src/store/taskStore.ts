@@ -4,6 +4,7 @@ import { FirestoreTaskRepository } from '../services/repositories/FirestoreTaskR
 import { LocalTaskRepository } from '../services/repositories/LocalTaskRepository';
 import { ITaskRepository } from '../services/repositories/ITaskRepository';
 import * as Notifications from 'expo-notifications';
+import { useAuthStore } from './authStore';
 
 // Configure notifications
 Notifications.setNotificationHandler({
@@ -147,6 +148,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     try {
       const tasks = await repository.getTasks(userId);
       set({ tasks, isLoading: false });
+      scheduleTaskReminders(tasks);
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }
@@ -180,6 +182,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
           });
         }
         set({ tasks: newTasks });
+        scheduleTaskReminders(newTasks);
       },
       (error) => set({ error: error.message })
     );

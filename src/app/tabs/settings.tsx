@@ -57,8 +57,11 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 export default function SettingsScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
   const insets = useSafeAreaInsets();
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateNotificationPreferences } = useAuthStore();
   const { settings, updateSettings, setAccentColor } = useSettingsStore();
+
+  const chatEnabled = user?.notificationPreferences?.chat !== false;
+  const tasksEnabled = user?.notificationPreferences?.tasks !== false;
 
   async function handleLogout() {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -124,14 +127,18 @@ export default function SettingsScreen() {
 
         {/* Notifications */}
         <Animated.View entering={FadeInDown.delay(140).springify()}>
-          <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.6, marginBottom: 8, textTransform: 'uppercase' }}>Notifications</Text>
+          <Text style={{ color: theme.colors.textMuted, fontSize: 12, fontWeight: '700', letterSpacing: 0.6, marginBottom: 8, textTransform: 'uppercase' }}>Push Notifications</Text>
           <SectionCard>
-            <SettingRow icon="notifications-outline" label="Task Reminders"
-              right={<Switch value={settings.notifications.reminders} onValueChange={v => updateSettings({ notifications: { ...settings.notifications, reminders: v } })} trackColor={{ false: theme.colors.border, true: `${theme.colors.accent}80` }} thumbColor={settings.notifications.reminders ? theme.colors.accent : theme.colors.textMuted} />}
+            <SettingRow icon="notifications-outline" label="Task Reminders" subtitle="Get notified before tasks are due"
+              right={<Switch value={tasksEnabled} onValueChange={v => {
+                if (user?.uid) updateNotificationPreferences(user.uid, { ...user.notificationPreferences, tasks: v });
+              }} trackColor={{ false: theme.colors.border, true: `${theme.colors.accent}80` }} thumbColor={tasksEnabled ? theme.colors.accent : theme.colors.textMuted} />}
             />
             <View style={{ height: 1, backgroundColor: theme.colors.border }} />
-            <SettingRow icon="time-outline" label="Daily Summary"
-              right={<Switch value={settings.notifications.dailySummary} onValueChange={v => updateSettings({ notifications: { ...settings.notifications, dailySummary: v } })} trackColor={{ false: theme.colors.border, true: `${theme.colors.accent}80` }} thumbColor={settings.notifications.dailySummary ? theme.colors.accent : theme.colors.textMuted} />}
+            <SettingRow icon="chatbubble-outline" label="Chat Messages" subtitle="Get notified for direct messages"
+              right={<Switch value={chatEnabled} onValueChange={v => {
+                if (user?.uid) updateNotificationPreferences(user.uid, { ...user.notificationPreferences, chat: v });
+              }} trackColor={{ false: theme.colors.border, true: `${theme.colors.accent}80` }} thumbColor={chatEnabled ? theme.colors.accent : theme.colors.textMuted} />}
             />
           </SectionCard>
         </Animated.View>

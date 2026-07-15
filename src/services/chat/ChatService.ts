@@ -13,7 +13,7 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { firestore, COLLECTIONS } from '../../config/firebase';
-
+import { notificationService } from '../notifications/NotificationService';
 export type ChatType = 'global' | 'direct';
 export interface ChatRoom {
   id: string;
@@ -147,6 +147,34 @@ export class ChatService {
       },
       updatedAt: timestamp,
     }, { merge: true });
+    // 3. Send Push Notification for Direct Messages
+    try {
+      const chatDoc = await getDoc(doc(firestore, COLLECTIONS.CHATS, chatId));
+      if (chatDoc.exists()) {
+        const chatData = chatDoc.data() as ChatRoom;
+        if (chatData.type === 'direct' && chatData.members) {
+          const recipientId = chatData.members.find(id => id !== senderId);
+          if (recipientId) {
+            const userDoc = await getDoc(doc(firestore, COLLECTIONS.USERS, recipientId));
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              // Check if they have disabled chat notifications explicitly
+              const chatNotificationsEnabled = userData.notificationPreferences?.chat !== false;
+              
+              if (chatNotificationsEnabled && userData.expoPushToken) {
+                await notificationService.sendChatMessageNotification(
+                  userData.expoPushToken,
+                  senderName,
+                  text
+                );
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send chat push notification:', error);
+    }
   }
 
   static async createOrGetDirectChat(user1Id: string, user1Name: string, user2Id: string, user2Name: string): Promise<string> {

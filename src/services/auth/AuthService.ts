@@ -117,6 +117,13 @@ class AuthService {
     await setDoc(ref, { expoPushToken, updatedAt: serverTimestamp() }, { merge: true });
   }
 
+  // ─── Update Preferences ───────────────────────────────────────────────────────
+
+  async updateNotificationPreferences(uid: string, preferences: { chat?: boolean; tasks?: boolean }): Promise<void> {
+    const ref = doc(firestore, COLLECTIONS.USERS, uid);
+    await setDoc(ref, { notificationPreferences: preferences, updatedAt: serverTimestamp() }, { merge: true });
+  }
+
   // ─── Auth State Listener ──────────────────────────────────────────────────────
 
   onAuthStateChanged(callback: (user: UserProfile | null) => void): () => void {

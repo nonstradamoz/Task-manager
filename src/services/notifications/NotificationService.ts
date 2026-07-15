@@ -50,6 +50,22 @@ class NotificationService {
       data: { type: 'task_assigned' },
     });
   }
+  /**
+   * Sends a chat message notification to a specific user.
+   */
+  async sendChatMessageNotification(
+    expoPushToken: string,
+    senderName: string,
+    messageText: string
+  ): Promise<void> {
+    await this.sendPushNotification({
+      to: expoPushToken,
+      sound: 'default',
+      title: `New Message from ${senderName} 💬`,
+      body: messageText,
+      data: { type: 'chat_message' },
+    });
+  }
 }
 
 export const notificationService = new NotificationService();
